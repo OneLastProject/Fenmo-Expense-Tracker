@@ -1,4 +1,5 @@
 import { useExpenses } from '../context/ExpenseContext';
+import ExpenseFilters from './ExpenseFilters';
 import './ExpenseList.css';
 
 const ExpenseList = () => {
@@ -23,6 +24,8 @@ const ExpenseList = () => {
   return (
     <div className="expense-list-container">
       <h2>Expenses</h2>
+      
+      <ExpenseFilters />
 
       {error && (
         <div className="error-message">

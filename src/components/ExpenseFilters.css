@@ -1,0 +1,104 @@
+.expense-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 16px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: #555;
+  font-size: 14px;
+}
+
+.filter-input-group {
+  display: flex;
+  gap: 8px;
+}
+
+.filter-input-group input {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.filter-input-group input:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.filter-button,
+.clear-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.filter-button {
+  background-color: #2196F3;
+  color: white;
+}
+
+.filter-button:hover {
+  background-color: #1976D2;
+}
+
+.clear-button {
+  background-color: #f44336;
+  color: white;
+}
+
+.clear-button:hover {
+  background-color: #d32f2f;
+}
+
+.filter-group select {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.filter-group select:focus {
+  outline: none;
+  border-color: #4CAF50;
+}
+
+.active-filter {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+}
+
+.active-filter strong {
+  color: #2196F3;
+}
+
+@media (max-width: 768px) {
+  .expense-filters {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+}
