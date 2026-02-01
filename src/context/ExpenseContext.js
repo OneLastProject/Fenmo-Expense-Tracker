@@ -17,15 +17,53 @@ export const ExpenseProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
     category: '',
-    sort: 'date_desc'
+    sort: 'date_desc',
+    page: 1,
+    limit: 5
+  });
+  const [pagination, setPagination] = useState({
+    total: 0,
+    page: 1,
+    limit: 5,
+    totalPages: 0
   });
 
   const loadExpenses = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchExpenses(filters);
-      setExpenses(data);
+      const response = await fetchExpenses(filters);
+      const page = filters.page ?? 1;
+      const limit = filters.limit ?? 5;
+
+      const expensesData = Array.isArray(response)
+        ? response
+        : (response?.data ?? response?.expenses ?? response?.items ?? response?.results ?? []);
+      const dataArray = Array.isArray(expensesData) ? expensesData : [];
+      setExpenses(dataArray);
+
+      const total = response?.total ?? response?.totalCount ?? response?.count ?? response?.totalElements;
+      const responseLimit = response?.limit ?? response?.pageSize ?? response?.size ?? limit;
+
+      if (typeof total === 'number') {
+        const effectiveLimit = responseLimit || limit;
+        const totalPages = Math.ceil(total / effectiveLimit) || 1;
+        const responsePage = response?.page ?? response?.currentPage ?? (response?.number !== undefined ? response.number + 1 : page);
+        setPagination({
+          total,
+          page: responsePage,
+          limit: effectiveLimit,
+          totalPages
+        });
+      } else {
+        const totalPages = dataArray.length >= limit ? Math.max(page + 1, 2) : page;
+        setPagination({
+          total: dataArray.length + (page - 1) * limit,
+          page,
+          limit,
+          totalPages
+        });
+      }
     } catch (err) {
       setError(err.message || 'Failed to load expenses');
       console.error('Error loading expenses:', err);
@@ -57,7 +95,13 @@ export const ExpenseProvider = ({ children }) => {
 
 
   const updateFilters = (newFilters) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
+    setFilters(prev => {
+      const next = { ...prev, ...newFilters };
+      if ('category' in newFilters || 'sort' in newFilters || 'limit' in newFilters) {
+        next.page = 1;
+      }
+      return next;
+    });
   };
 
   // Calculate total of visible expenses
@@ -68,6 +112,7 @@ export const ExpenseProvider = ({ children }) => {
     loading,
     error,
     filters,
+    pagination,
     total,
     addExpense,
     updateFilters,

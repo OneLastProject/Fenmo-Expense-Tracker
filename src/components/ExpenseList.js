@@ -1,9 +1,10 @@
+import React from 'react';
 import { useExpenses } from '../context/ExpenseContext';
 import ExpenseFilters from './ExpenseFilters';
 import './ExpenseList.css';
 
 const ExpenseList = () => {
-  const { expenses, loading, error, total } = useExpenses();
+  const { expenses, loading, error, total, filters, pagination, updateFilters } = useExpenses();
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -45,40 +46,69 @@ const ExpenseList = () => {
         </div>
       )}
 
-      {!loading && !error && expenses.length > 0 && (
+      {!loading && !error && (
         <>
-          <div className="expense-table-wrapper">
-            <table className="expense-table">
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Category</th>
-                  <th>Description</th>
-                  <th className="amount-column">Amount</th>
-                </tr>
-              </thead>
-              <tbody>
-                {expenses.map((expense) => (
-                  <tr key={expense.id}>
-                    <td>{formatDate(expense.date)}</td>
-                    <td>
-                      <span className="category-badge">
-                        {expense.category}
-                      </span>
-                    </td>
-                    <td>{expense.description}</td>
-                    <td className="amount-column">
-                      {formatCurrency(expense.amount)}
-                    </td>
+          {expenses.length > 0 && (
+            <div className="expense-table-wrapper">
+              <table className="expense-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th className="amount-column">Amount</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          <div className="total-section">
-            <div className="total-label">Total:</div>
-            <div className="total-amount">{formatCurrency(total)}</div>
+                </thead>
+                <tbody>
+                  {expenses.map((expense) => (
+                    <tr key={expense.id}>
+                      <td>{formatDate(expense.date)}</td>
+                      <td>
+                        <span className="category-badge">
+                          {expense.category}
+                        </span>
+                      </td>
+                      <td>{expense.description}</td>
+                      <td className="amount-column">
+                        {formatCurrency(expense.amount)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          <div className="list-footer">
+            <div className="pagination-controls">
+              <button
+                type="button"
+                className="pagination-button"
+                onClick={() => updateFilters({ page: Math.max(1, filters.page - 1) })}
+                disabled={filters.page <= 1 || loading || filters.page === 1}
+              >
+                Previous
+              </button>
+              <span className="pagination-info">
+                {filters.page}
+              </span>
+              <button
+                type="button"
+                className="pagination-button"
+                onClick={() => {
+                  const lastPage = pagination.totalPages || 1;
+                  if (filters.page < lastPage) {
+                    updateFilters({ page: filters.page + 1 });
+                  }
+                }}
+                disabled={filters.page >= (pagination.totalPages || 1) || loading || filters.page === (pagination.totalPages || 1)}
+              >
+                Next
+              </button>
+            </div>
+            <div className="total-section">
+              <div className="total-label">Total (this page):</div>
+              <div className="total-amount">{formatCurrency(total)}</div>
+            </div>
           </div>
         </>
       )}

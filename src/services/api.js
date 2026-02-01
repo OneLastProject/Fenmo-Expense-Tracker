@@ -4,16 +4,12 @@ const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const fetchExpenses = async (filters = {}) => {
   try {
     const params = new URLSearchParams();
-    
-    if (filters.category) {
-      params.append('category', filters.category);
-    }
-    
-    if (filters.sort) {
-      params.append('sort', filters.sort);
-    }
+    params.append('category', filters.category || '');
+    params.append('sort', filters.sort || 'date_desc');
+    params.append('page', String(filters.page ?? 1));
+    params.append('limit', String(filters.limit ?? 5));
 
-    const url = `${API_BASE_URL}/expenses${params.toString() ? '?' + params.toString() : ''}`;
+    const url = `${API_BASE_URL}/expenses?${params.toString()}`;
     
     const response = await fetch(url, {
       method: 'GET',
